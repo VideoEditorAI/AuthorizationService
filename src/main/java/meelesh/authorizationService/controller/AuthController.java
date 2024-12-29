@@ -1,13 +1,16 @@
 package meelesh.authorizationService.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import meelesh.authorizationService.dto.AuthenticationDTO;
 import meelesh.authorizationService.dto.TokenRefreshDTO;
 import meelesh.authorizationService.dto.request.LoginRequestDTO;
 import meelesh.authorizationService.dto.request.RegisterRequestDTO;
 import meelesh.authorizationService.entity.AuthUser;
 import meelesh.authorizationService.service.MainUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +46,17 @@ public class AuthController {
     @PostMapping("/token/refresh")
     public ResponseEntity<String> token(@RequestBody TokenRefreshDTO tokenDTO) {
         return mainUserService.refreshToken(tokenDTO);
+    }
+
+    @GetMapping("/token/validate")
+    public ResponseEntity<AuthenticationDTO> validateToken(Authentication authentication) {
+
+        if (authentication == null) return new ResponseEntity<>(new AuthenticationDTO(null, null, "anonymous", "false"), HttpStatusCode.valueOf(401));
+
+        AuthUser userDetails = (AuthUser) authentication.getPrincipal();
+        Long id = userDetails.getId();
+        String username = mainUserService.getUsernameById(id);
+        return ResponseEntity.ok(new AuthenticationDTO(id, username, "USER", "true"));
     }
 
 }

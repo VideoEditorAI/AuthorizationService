@@ -53,6 +53,11 @@ public class MainUserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    public String getUsernameById(Long id) {
+        AuthUser user = userRepository.getReferenceById(id);
+        return user.getUsername();
+    }
+
     public ResponseEntity<String> createUser(AuthUser authUser) {
         if (userRepository.existsByUsername(authUser.getUsername())) {
             StatusDTO status = new StatusDTO();
