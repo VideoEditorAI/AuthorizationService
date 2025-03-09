@@ -1,0 +1,7 @@
+FROM openjdk:21
+
+ADD target/authorization-service-1.0.jar authorization-service-1.0.jar
+
+EXPOSE 8084
+
+ENTRYPOINT ["java", "-jar", "authorization-service-1.0.jar"]

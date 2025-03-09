@@ -1,0 +1,31 @@
+version: '3.9'
+
+networks:
+  web:
+    external: true
+    driver:  bridge
+
+services:
+  authorization-db:
+    image: postgres:17.4
+    container_name: authorization-db
+    environment:
+      POSTGRES_DB: AuthorizationService
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGPORT: 5434
+    ports:
+      - "5434:5434"
+
+  authorization-service:
+    image: meelesh/authorization-service
+    build:
+      context: .
+      dockerfile: AuthorizationDockerfile
+    ports:
+      - '8084:8084'
+    depends_on:
+      - authorization-db
+    environment:
+      DB_URL: jdbc:postgresql://authorization-db:5434/AuthorizationService
+      restart: unless-stopped
